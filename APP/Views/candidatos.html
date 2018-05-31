@@ -1,0 +1,163 @@
+﻿<div>
+    <div ng-if="divCandidatos" class="table-responsive">
+        <br /><p><b>Lista de candidatos</b></p>
+        <table class="table">
+            <tr>
+                <td><b>Nome</b></td>
+                <td><b>Email</b></td>
+                <td><b>Skype</b></td>
+                <td><b>Telefone</b></td>
+                <td><b>Pretensão</b></td>
+                <td><b>Ação</b></td>
+            </tr>
+            <tr ng-repeat="candidato in lstCandidato">
+                <td>{{candidato.Nome}}</td>
+                <td>{{candidato.Email}}</td>
+                <td>{{candidato.Skype}}</td>
+                <td>{{candidato.Telefone}}</td>
+                <td>{{candidato.PretensaoSalarial | currency: 'R$ '}}</td>
+                <td>
+                    <button type="button" id="select" ng-click="visualizarCandidato(candidato)" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                    <button type="button" id="update" ng-click="editarCandidato(candidato)" class="btn btn-warning"><span class="glyphicon glyphicon-file"></span></button>
+                    <button type="button" id="delete" ng-click="deletarCandidato(candidato)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div ng-if="divEditar">
+        <form name="Editar">
+            <br /><br />
+            <b>Alterar dados do candidato</b>
+            <br /><br /><b>Name / Nome </b>
+            <br /><input name="nome" type="text" ng-model="candidatoEditar.Nome" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.nome.$touched && Editar.nome.$invalid">Este campo é obrigatorio.</span>
+
+            <br /><b>Email </b>
+            <br /><input name="email" type="text" ng-model="candidatoEditar.Email" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.email.$touched && Editar.email.$invalid">Este campo é obrigatorio.</span>
+
+            <br /><b>Skype </b>
+            <br /><input name="skype" type="text" ng-model="candidatoEditar.Skype" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.skype.$touched && Editar.skype.$invalid">Este campo é obrigatorio.</span>
+
+            <br /><b>Phone / Telefone </b>
+            <br /><input name="telefone" type="text" ng-model="candidatoEditar.Telefone" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.telefone.$touched && Editar.telefone.$invalid">Este campo é obrigatorio.</span>
+
+            <br /><b>Linkedin </b>
+            <br /><input name="linkedin" type="text" ng-model="candidatoEditar.Linkedin" class="form-control" />
+
+            <br /><b>City / Cidade </b>
+            <br /><input name="cidade" type="text" ng-model="candidatoEditar.Cidade" class="form-control" required />
+
+            <br /><b>State / Estado </b>
+            <select name="estado" ng-model="candidatoEditar.Estado" class="form-control">
+                <option ng-repeat="estado in lstEstados" value="{{estado}}">{{estado}}</option>
+            </select>
+
+            <br /><b>Portfolio </b>
+            <br /><input name="portfolio" type="text" ng-model="candidatoEditar.Portfolio" class="form-control" />
+
+            <br /><b>What is your willingness to work today? / Qual é sua disponibilidade para trabalhar hoje? </b>
+            <div ng-repeat="hr in lstHorario">
+                <input type="checkbox" ng-checked="checaExiste(hr.IdHorario, 'Horario', 'Editar')!=-1" ng-click="addHorario(hr.IdHorario, candidatoEditar.IdCandidato)"
+                       class="checkbox-inline"> {{hr.DsHorario}} <br />
+            </div>
+            <span class="text-danger" ng-show="candidatoEditar.candidatoHorarios.length < 1">Selecione uma opção.</span>
+
+
+            <br /><b>What's the best time to work for you? / Pra você qual é o melhor horário para trabalhar? </b>
+            <div ng-repeat="pr in lstPeriodo">
+                <input type="checkbox" ng-checked="checaExiste(pr.IdPeriodo, 'Periodo', 'Editar')!=-1" ng-click="addPeriodo(pr.IdPeriodo, candidatoEditar.IdCandidato)"
+                       class="checkbox-inline"> {{pr.DsPeriodo}}<br>
+            </div>
+            <span class="text-danger" ng-show="candidatoEditar.candidatoPeriodos.length < 1">Selecione uma opção.</span>
+
+
+            <br /><b>What is your hourly salary requirements? / Qual sua pretensão salarial por hora?  </b>
+            <br /><input name="salario" type="number" ng-model="candidatoEditar.PretensaoSalarial" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.salario.$touched && Editar.salario.$invalid">Este campo é obrigatorio.</span>
+
+            <br /><b>Bank / Banco</b>
+            <br /><input name="banco" type="text" ng-model="candidatoEditar.NomeBanco" class="form-control" />
+
+            <br /><b>Beneficiary's name/ Nome beneficiario</b>
+            <br /><input name="beneficiario" type="text" ng-model="candidatoEditar.NomeBeneficiarioBanco" class="form-control" />
+
+            <br /><b>Only for Brazilians / CPF</b>
+            <br /><input name="cpf" type="text" ng-model="candidatoEditar.CpfBeneficiarioBanco" class="form-control" />
+
+            <br /><b>Agency / Agencia</b>
+            <br /><input name="agencia" type="text" ng-model="candidatoEditar.AgenciaBanco" class="form-control" />
+
+            <br /><b>Account Number / Número da conta</b>
+            <br /><input name="numero" type="text" ng-model="candidatoEditar.ContaBanco" class="form-control" />
+
+            <br /><b>Account Type / Tipo de conta</b>
+            <select name="tipoConta" ng-model="candidatoEditar.TipoConta" class="form-control">
+                <option value="Corrente">Corrente</option>
+                <option value="Poupanca">Poupança</option>
+                <option value="Outro">Outro</option>
+            </select>
+
+            <br /><br /><b>Conhecimento do candidato</b>
+            <br /><b>0 (Nao conheco / I don't know) / 5 (Senior)</b>
+            <div ng-repeat="conhecimentos in lstConhecimento | filter: {DsConhecimento: '!Outros'}" ng-init="index = $index">
+                <b>{{conhecimentos.DsConhecimento}}</b><br />
+                <span ng-repeat="nivel in lstNiveis">
+                    <input type="radio" name="{{conhecimentos.DsConhecimento}}" ng-model="candidatoEditar.candidatoConhecimentos[index].Nivel"
+                           ng-checked="candidatoEditar.candidatoConhecimentos[index].Nivel === nivel"
+                           ng-change="addConhecimento(conhecimentos.IdConhecimento, nivel)" value="{{nivel}}">
+                    {{nivel}}&emsp;
+                </span>
+            </div><br />
+            <b>Outros</b>
+            <br /><input name="outros" type="text" ng-model="candidatoEditar.candidatoConhecimentos[25].DsOutros" class="form-control" />
+            <br /><b>Link Crud</b>
+            <br /><input name="crud" type="text" ng-model="candidatoEditar.LinkCrud" class="form-control" required />
+            <span class="text-danger" ng-show="Editar.crud.$touched && Editar.crud.$invalid">Este campo é obrigatorio.</span>
+            <br />
+            <input type="button" class="btn btn-default" value="Salvar" ng-click="atualizarCandidato()" ng-disabled="Editar.$invalid" />
+            <input type="button" class="btn btn-danger" value="Voltar" ng-click="cancelar()" />
+        </form>
+    </div>
+    <div ng-if="divVisualizar">
+        <br /><br />
+        <center><p><b>Dados do candidato</b></p></center>
+        <b>Name / Nome: </b>{{candidatoVisualizar.Nome}}<br /><br />
+        <b>Email: </b>{{candidatoVisualizar.Email}}<br /><br />
+        <b>Skype: </b>{{candidatoVisualizar.Skype}}<br /><br />
+        <b>Phone / Telefone: </b>{{candidatoVisualizar.Telefone}}<br /><br />
+        <b>Linkedin: </b>{{candidatoVisualizar.Linkedin}}<br /><br />
+        <b>City / Cidade: </b>{{candidatoVisualizar.Cidade}}<br /><br />
+        <b>State / Estado: </b>{{candidatoVisualizar.Estado}}<br /><br />
+        <b>Portfolio: </b>{{candidatoVisualizar.Portfolio}}<br /><br />
+        <b>What is your willingness to work today? / Qual é sua disponibilidade para trabalhar hoje? </b>
+        <div ng-repeat="hr in lstHorario">
+            <input id="{{hr.IdHorario}}" ng-checked="checaExiste(hr.IdHorario, 'Horario', 'Visualizar')!=-1" type="checkbox" class="checkbox-inline" disabled> {{hr.DsHorario}} <br />
+        </div>
+        <b>What's the best time to work for you? / Pra você qual é o melhor horário para trabalhar? </b>
+        <div ng-repeat="pr in lstPeriodo">
+            <input id="{{pr.IdPeriodo}}" ng-checked="checaExiste(pr.IdPeriodo, 'Periodo', 'Visualizar')!=-1" type="checkbox" class="checkbox-inline" disabled> {{pr.DsPeriodo}}<br>
+        </div>
+        <br /><b>What is your hourly salary requirements? / Qual sua pretensão salarial por hora? </b>{{candidatoVisualizar.PretensaoSalarial | currency: 'R$ '}}<br /><br />
+        <b>Bank / Banco: </b>{{candidatoVisualizar.NomeBanco}}<br /><br />
+        <b>Name / Nome: </b>{{candidatoVisualizar.NomeBeneficiarioBanco}}<br /><br />
+        <b>Only for Brazilians / CPF: </b>{{candidatoVisualizar.CpfBeneficiarioBanco}}<br /><br />
+        <b>Agency / Agencia: </b>{{candidatoVisualizar.AgenciaBanco}}<br /><br />
+        <b>Account Number / Número da conta: </b>{{candidatoVisualizar.ContaBanco}}<br /><br />
+        <b>Account Type / Tipo de conta: </b>{{candidatoVisualizar.TipoConta}}<br /><br />
+
+        <p><b>Conhecimento do candidato</b></p>
+        <div ng-repeat="conhecimentos in lstConhecimento | filter: {DsConhecimento: '!Outros'}" ng-init="index = $index">
+            <b>{{conhecimentos.DsConhecimento}}</b><br />
+            <span ng-repeat="nivel in lstNiveis">
+                <input type="radio" name="{{conhecimentos.DsConhecimento}}" ng-checked="candidatoVisualizar.candidatoConhecimentos[index].Nivel === nivel" disabled>
+                {{nivel}}&emsp;
+            </span>
+        </div><br />
+        <b>Outros: </b>{{candidatoVisualizar.candidatoConhecimentos[25].DsOutros}}<br /><br />
+        <b>Link CRUD: </b>{{candidatoVisualizar.LinkCrud}}<br /><br />
+        <input type="button" class="btn btn-danger" value="Voltar" ng-click="cancelar()" />
+    </div>
+</div>
